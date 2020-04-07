@@ -1,0 +1,44 @@
+# Docker
+# Build a Docker image 
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+- master
+
+resources:
+- repo: self
+
+variables:
+  tag: '$(Build.BuildId)'
+
+stages:
+- stage: Build
+  displayName: Build image
+  jobs:  
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: Docker@2
+      displayName: Build an image
+      inputs:
+        containerRegistry: 'MSDNAzureACR'
+        repository: 'test'
+        command: 'build'
+        Dockerfile: '**/Dockerfile'
+        tags: 'test'
+    - task: aquasecScanner@4
+      inputs:
+        image: 'test'
+        scanType: 'local'
+        register: false
+        hideBase: false
+        showNegligible: false
+        windowsScannerVersion: '4.2.0'
+        scanner: 'mycontainerregistryvis.azurecr.io/scanner:4.2.20064'
+        registry: 'mycontainerregistryvis.azurecr.io'
+        connection: 'Aquaagent'
+        caCertificates: true
+
+
