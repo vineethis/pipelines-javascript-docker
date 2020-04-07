@@ -34,7 +34,7 @@ stages:
         tags: 'test'
     - task: aquasecScanner@4
       inputs:
-        image: 'test'
+        image: 'mycontainerregistryvis.azurecr.io/test:test'
         scanType: 'local'
         register: false
         hideBase: false
